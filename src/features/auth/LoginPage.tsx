@@ -1,13 +1,7 @@
-import { useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { z } from 'zod';
-import { login } from '../api/Login';
-import { getAuth, setAuth } from '../auth/Auth';
-
-const loginSchema = z.object({
-    email: z.string().email('Please enter a valid email'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-});
+import { getAuth, setAuth } from './AuthService';
 
 export function LoginPage() {
     const navigate = useNavigate();
@@ -20,12 +14,19 @@ export function LoginPage() {
         return <Navigate to="/" replace />;
     }
 
-    async function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setFieldErrors({});
         setApiError('');
 
-        const result = loginSchema.safeParse({ email, password });
+        const result = z
+            .object({
+                email: z.string().email('Please enter a valid email'),
+                password: z
+                    .string()
+                    .min(6, 'Password must be at least 6 characters'),
+            })
+            .safeParse({ email, password });
 
         if (!result.success) {
             const errors: Record<string, string> = {};
@@ -38,11 +39,24 @@ export function LoginPage() {
         }
 
         try {
-            const { token, user } = await login(email, password);
+            const response = await fetch('http://localhost:3001/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message);
+            }
+
+            const { token, user } = await response.json();
             setAuth(token, user);
             navigate('/');
         } catch (err) {
-            setApiError(err instanceof Error ? err.message : 'Something went wrong');
+            setApiError(
+                err instanceof Error ? err.message : 'Something went wrong',
+            );
         }
     }
 

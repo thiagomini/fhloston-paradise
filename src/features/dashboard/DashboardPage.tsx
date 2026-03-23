@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, clearAuth } from '../auth/Auth';
+import { getAuth, clearAuth } from '../auth/AuthService';
 
-export function LandingPage() {
+export function DashboardPage() {
     const navigate = useNavigate();
     const auth = getAuth();
 
@@ -16,10 +16,10 @@ export function LandingPage() {
         return null;
     }
 
-    function handleLogout() {
+    const handleLogout = () => {
         clearAuth();
         navigate('/login');
-    }
+    };
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50">

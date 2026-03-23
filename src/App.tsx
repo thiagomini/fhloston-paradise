@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
-import { LoginPage } from './pages/LoginPage';
-import { LandingPage } from './pages/LandingPage';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import { LoginPage } from './features/auth/LoginPage';
+import { DashboardPage } from './features/dashboard/DashboardPage';
+import { ProtectedRoute } from './features/auth/ProtectedRoute';
 
 function App() {
     return (
@@ -10,7 +10,7 @@ function App() {
                 path="/"
                 element={
                     <ProtectedRoute>
-                        <LandingPage />
+                        <DashboardPage />
                     </ProtectedRoute>
                 }
             />
