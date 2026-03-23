@@ -5,12 +5,14 @@ import { ProtectedRoute } from './features/auth/ProtectedRoute';
 
 function App() {
     return (
-        <div className="min-h-screen bg-sky-100">
-            <img
-                src="/logo.png"
-                alt="Fhloston Paradise"
-                className="fixed left-4 top-4 h-44"
-            />
+        <div className="min-h-screen bg-sky-100 flex flex-col">
+            <div className="flex justify-center pt-4">
+                <img
+                    src="/logo.png"
+                    alt="Fhloston Paradise"
+                    className="h-28"
+                />
+            </div>
             <Routes>
                 <Route
                     path="/"
