@@ -1,37 +1,51 @@
+const react = require('eslint-plugin-react');
+const reactHooks = require('eslint-plugin-react-hooks');
+const typescript = require('@typescript-eslint/eslint-plugin');
+const tsParser = require('@typescript-eslint/parser');
 const prettier = require('eslint-config-prettier');
 
 module.exports = [
     {
-        files: ['**/*.js'],
+        files: ['**/*.{js,jsx,ts,tsx}'],
         languageOptions: {
-            ecmaVersion: 'latest',
-            sourceType: 'commonjs',
+            parser: tsParser,
+            parserOptions: {
+                ecmaFeatures: {
+                    jsx: true,
+                },
+            },
             globals: {
-                require: 'readonly',
-                module: 'readonly',
-                exports: 'readonly',
-                __dirname: 'readonly',
-                __filename: 'readonly',
-                process: 'readonly',
-                console: 'readonly',
+                ...react.configs.recommended.globals,
+                ...reactHooks.configs.recommended.globals,
             },
         },
-        rules: {
-            'no-unused-vars': 'warn',
-        },
-    },
-    {
-        files: ['src/**/*.{ts,tsx}'],
-        languageOptions: {
-            ecmaVersion: 'latest',
-            sourceType: 'module',
+        plugins: {
+            react,
+            'react-hooks': reactHooks,
+            '@typescript-eslint': typescript,
         },
         rules: {
+            ...react.configs.recommended.rules,
+            ...react.configs['jsx-runtime'].rules,
+            ...reactHooks.configs.recommended.rules,
+            ...typescript.configs.recommended.rules,
+
             'no-unused-vars': 'warn',
+            '@typescript-eslint/explicit-function-return-type': 'off',
+            'react-hooks/rules-of-hooks': 'error',
+            'react-hooks/exhaustive-deps': 'warn',
         },
-    },
-    {
-        ignores: ['node_modules/', 'dist/'],
+        settings: {
+            react: {
+                version: 'detect',
+            },
+        },
+        ignores: [
+            'node_modules/',
+            'dist/',
+            '*.config.js',
+            '*.config.cjs',
+        ],
     },
     prettier,
 ];

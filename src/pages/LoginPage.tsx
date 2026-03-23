@@ -42,9 +42,7 @@ export function LoginPage() {
             setAuth(token, user);
             navigate('/');
         } catch (err) {
-            setApiError(
-                err instanceof Error ? err.message : 'Something went wrong',
-            );
+            setApiError(err instanceof Error ? err.message : 'Something went wrong');
         }
     }
 
@@ -57,10 +55,7 @@ export function LoginPage() {
                 <h1 className="text-xl font-semibold">Login</h1>
 
                 <div>
-                    <label
-                        htmlFor="email"
-                        className="mb-1 block text-sm font-medium"
-                    >
+                    <label htmlFor="email" className="mb-1 block text-sm font-medium">
                         Email
                     </label>
                     <input
@@ -71,17 +66,12 @@ export function LoginPage() {
                         className="w-full rounded border px-3 py-2"
                     />
                     {fieldErrors.email && (
-                        <p className="mt-1 text-sm text-red-600">
-                            {fieldErrors.email}
-                        </p>
+                        <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
                     )}
                 </div>
 
                 <div>
-                    <label
-                        htmlFor="password"
-                        className="mb-1 block text-sm font-medium"
-                    >
+                    <label htmlFor="password" className="mb-1 block text-sm font-medium">
                         Password
                     </label>
                     <input
@@ -98,9 +88,7 @@ export function LoginPage() {
                     )}
                 </div>
 
-                {apiError && (
-                    <p className="text-sm text-red-600">{apiError}</p>
-                )}
+                {apiError && <p className="text-sm text-red-600">{apiError}</p>}
 
                 <button
                     type="submit"
