@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, clearAuth } from '../auth/AuthService';
+import {
+    CardLayout,
+    UserCard,
+    UserPicture,
+    UserDescription,
+    Button,
+} from '../../design-system';
 
 export function DashboardPage() {
     const navigate = useNavigate();
@@ -22,23 +29,19 @@ export function DashboardPage() {
     };
 
     return (
-        <div className="flex flex-1 items-center justify-center">
-            <div className="w-full max-w-sm space-y-6 rounded bg-white p-8 text-center shadow">
-                <img
+        <CardLayout>
+            <UserCard>
+                <UserPicture
                     src={auth.user.picture}
-                    alt={auth.user.email}
-                    className="mx-auto h-32 w-32 rounded-full shadow-md"
+                    alt={auth.user.name}
                 />
-                <h1 className="text-xl font-semibold">
+                <UserDescription>
                     Welcome, {auth.user.name} &lt;{auth.user.email}&gt;
-                </h1>
-                <button
-                    onClick={handleLogout}
-                    className="rounded bg-gray-200 px-4 py-2 hover:bg-gray-300"
-                >
-                    Logout
-                </button>
-            </div>
-        </div>
+                </UserDescription>
+            </UserCard>
+            <Button variant="secondary" onClick={handleLogout}>
+                Logout
+            </Button>
+        </CardLayout>
     );
 }

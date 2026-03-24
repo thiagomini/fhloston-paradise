@@ -1,7 +1,15 @@
 import { type FormEvent, useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { getAuth, setAuth } from './AuthService';
+import {
+    Alert,
+    CardLayout,
+    Title,
+    FormField,
+    TextInput,
+    Button,
+} from '../../design-system';
 
 export function LoginPage() {
     const navigate = useNavigate();
@@ -61,56 +69,41 @@ export function LoginPage() {
     }
 
     return (
-        <div className="flex flex-1 items-center justify-center">
-            <form
-                onSubmit={handleSubmit}
-                className="w-full max-w-sm space-y-4 rounded bg-white p-8 shadow"
-            >
-                <h1 className="text-xl font-semibold">Login</h1>
+        <CardLayout>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <Title>Authenticate</Title>
 
-                <div>
-                    <label htmlFor="email" className="mb-1 block text-sm font-medium">
-                        Email
-                    </label>
-                    <input
+                <FormField
+                    label="Email"
+                    htmlFor="email"
+                    error={fieldErrors.email}
+                >
+                    <TextInput
                         id="email"
-                        type="text"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded border px-3 py-2"
+                        onChange={setEmail}
                     />
-                    {fieldErrors.email && (
-                        <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
-                    )}
-                </div>
+                </FormField>
 
-                <div>
-                    <label htmlFor="password" className="mb-1 block text-sm font-medium">
-                        Password
-                    </label>
-                    <input
+                <FormField
+                    label="Password"
+                    htmlFor="password"
+                    error={fieldErrors.password}
+                >
+                    <TextInput
                         id="password"
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full rounded border px-3 py-2"
+                        onChange={setPassword}
                     />
-                    {fieldErrors.password && (
-                        <p className="mt-1 text-sm text-red-600">
-                            {fieldErrors.password}
-                        </p>
-                    )}
-                </div>
+                </FormField>
 
-                {apiError && <p className="text-sm text-red-600">{apiError}</p>}
+                {apiError && (
+                    <Alert variant="error">{apiError}</Alert>
+                )}
 
-                <button
-                    type="submit"
-                    className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700"
-                >
-                    Login
-                </button>
+                <Button type="submit">Login</Button>
             </form>
-        </div>
+        </CardLayout>
     );
 }
