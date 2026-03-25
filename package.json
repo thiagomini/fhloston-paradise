@@ -11,7 +11,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint 'src/**/*.{ts,tsx}' --report-unused-disable-directives --fix",
-    "format": "prettier --write 'src/**/*.{ts,tsx,css,md}'"
+    "format": "prettier --write 'src/**/*.{ts,tsx,css,md}'",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "cypress": "^15.13.0",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "react": "^19.2.4",
