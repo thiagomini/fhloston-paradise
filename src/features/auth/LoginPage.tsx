@@ -1,7 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { getAuth, setAuth } from './AuthService';
+import { getAuth } from './AuthService';
+import { useLogin } from './useLogin';
 import {
     Alert,
     CardLayout,
@@ -13,6 +14,7 @@ import {
 
 export function LoginPage() {
     const navigate = useNavigate();
+    const { login } = useLogin();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -30,9 +32,7 @@ export function LoginPage() {
         const result = z
             .object({
                 email: z.string().email('Please enter a valid email'),
-                password: z
-                    .string()
-                    .min(6, 'Password must be at least 6 characters'),
+                password: z.string().min(6, 'Password must be at least 6 characters'),
             })
             .safeParse({ email, password });
 
@@ -46,25 +46,15 @@ export function LoginPage() {
             return;
         }
 
-        try {
-            const response = await fetch('http://localhost:3001/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
+        const { data, error } = await login(email, password);
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message);
-            }
+        if (error) {
+            setApiError(error);
+            return;
+        }
 
-            const { token, user } = await response.json();
-            setAuth(token, user);
+        if (data) {
             navigate('/');
-        } catch (err) {
-            setApiError(
-                err instanceof Error ? err.message : 'Something went wrong',
-            );
         }
     }
 
@@ -73,16 +63,8 @@ export function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
                 <Title>Authenticate</Title>
 
-                <FormField
-                    label="Email"
-                    htmlFor="email"
-                    error={fieldErrors.email}
-                >
-                    <TextInput
-                        id="email"
-                        value={email}
-                        onChange={setEmail}
-                    />
+                <FormField label="Email" htmlFor="email" error={fieldErrors.email}>
+                    <TextInput id="email" value={email} onChange={setEmail} />
                 </FormField>
 
                 <FormField
@@ -98,9 +80,7 @@ export function LoginPage() {
                     />
                 </FormField>
 
-                {apiError && (
-                    <Alert variant="error">{apiError}</Alert>
-                )}
+                {apiError && <Alert variant="error">{apiError}</Alert>}
 
                 <Button type="submit">Login</Button>
             </form>
