@@ -19,5 +19,5 @@
     "noFallthroughCasesInSwitch": true,
     "types": ["cypress"]
   },
-  "include": ["src"]
+  "include": ["src", "cypress"]
 }
