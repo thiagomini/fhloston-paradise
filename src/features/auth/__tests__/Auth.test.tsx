@@ -66,4 +66,39 @@ describe('Authentication', () => {
 
         cy.url().should('equal', '/login');
     });
+
+    it('Redirects to login page when logged out', () => {
+        // Simulate a logged-in state by setting a token in localStorage
+        localStorage.setItem('token', 'fhloston-paradise-token');
+        localStorage.setItem(
+            'user',
+            JSON.stringify({
+                id: 1,
+                name: 'Korben Dallas',
+                email: 'korben@fhloston.com',
+                picture: '/images/korben.png',
+            }),
+        );
+        const dummyAuthAdapter: AuthAdapter = {
+            authenticate() {
+                return Promise.reject(new Error('Should not be called'));
+            },
+        };
+
+        cy.mount(
+            <AuthAdapterProvider adapter={dummyAuthAdapter}>
+                <App />{' '}
+            </AuthAdapterProvider>,
+            '/',
+        );
+
+        cy.url().should('equal', '/');
+        cy.contains('Korben Dallas').should('be.visible');
+
+        // Click the logout button
+        cy.findByRole('button', { name: /logout/i }).click();
+
+        cy.url().should('equal', '/login');
+        cy.findByRole('heading', { name: /authenticate/i }).should('be.visible');
+    });
 });
