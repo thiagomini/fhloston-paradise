@@ -1,16 +1,16 @@
 import { type FormEvent, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { getAuth } from './AuthService';
-import { useLogin } from './useLogin';
 import {
     Alert,
+    Button,
     CardLayout,
-    Title,
     FormField,
     TextInput,
-    Button,
+    Title,
 } from '../../design-system';
+import { getAuth } from './AuthService';
+import { validateLoginForm } from './LoginPageService';
+import { useLogin } from './useLogin';
 
 export function LoginPage() {
     const navigate = useNavigate();
@@ -29,20 +29,10 @@ export function LoginPage() {
         setFieldErrors({});
         setApiError('');
 
-        const result = z
-            .object({
-                email: z.email('Please enter a valid email'),
-                password: z.string().min(6, 'Password must be at least 6 characters'),
-            })
-            .safeParse({ email, password });
+        const errorsOrUndefined = validateLoginForm({ email, password });
 
-        if (!result.success) {
-            const errors: Record<string, string> = {};
-            for (const issue of result.error.issues) {
-                const field = issue.path[0] as string;
-                errors[field] = issue.message;
-            }
-            setFieldErrors(errors);
+        if (errorsOrUndefined) {
+            setFieldErrors(errorsOrUndefined);
             return;
         }
 
