@@ -1,5 +1,5 @@
 import App from '../../../App';
-import { AuthAdapter, AuthAdapterProvider } from '../AuthProvider';
+import { Auth, AuthAdapter, AuthAdapterProvider } from '../AuthProvider';
 
 describe('Authentication', () => {
     beforeEach(() => {
@@ -7,19 +7,15 @@ describe('Authentication', () => {
     });
 
     it('Authenticates successfully with valid credentials', () => {
-        const fakeAuthAdapter: AuthAdapter = {
-            authenticate() {
-                return Promise.resolve({
-                    token: 'fhloston-paradise-token',
-                    user: {
-                        id: 1,
-                        name: 'Korben Dallas',
-                        email: 'korben@fhloston.com',
-                        picture: '/images/korben.png',
-                    },
-                });
+        const fakeAuthAdapter = createFakeAuthAdapter({
+            token: 'fhloston-paradise-token',
+            user: {
+                id: 1,
+                name: 'Korben Dallas',
+                email: 'korben@fhloston.com',
+                picture: '/images/korben.png',
             },
-        };
+        });
 
         cy.mount(
             <AuthAdapterProvider adapter={fakeAuthAdapter}>
@@ -39,11 +35,7 @@ describe('Authentication', () => {
     });
 
     it('Fails authentication with invalid credentials', () => {
-        const fakeAuthAdapter: AuthAdapter = {
-            authenticate() {
-                return Promise.resolve(new Error('Invalid credentials'));
-            },
-        };
+        const fakeAuthAdapter = createFakeAuthAdapter(new Error('Invalid credentials'));
 
         cy.mount(
             <AuthAdapterProvider adapter={fakeAuthAdapter}>
@@ -68,22 +60,17 @@ describe('Authentication', () => {
     });
 
     it('Redirects to login page when logged out', () => {
-        // Simulate a logged-in state by setting a token in localStorage
-        localStorage.setItem('token', 'fhloston-paradise-token');
-        localStorage.setItem(
-            'user',
-            JSON.stringify({
+        // Simulate a logged-in state
+        const authData: Auth = {
+            token: 'fhloston-paradise-token',
+            user: {
                 id: 1,
                 name: 'Korben Dallas',
                 email: 'korben@fhloston.com',
                 picture: '/images/korben.png',
-            }),
-        );
-        const dummyAuthAdapter: AuthAdapter = {
-            authenticate() {
-                return Promise.reject(new Error('Should not be called'));
             },
         };
+        const dummyAuthAdapter = createFakeAuthAdapter(authData, authData);
 
         cy.mount(
             <AuthAdapterProvider adapter={dummyAuthAdapter}>
@@ -102,3 +89,22 @@ describe('Authentication', () => {
         cy.findByRole('heading', { name: /authenticate/i }).should('be.visible');
     });
 });
+
+function createFakeAuthAdapter(
+    result: Auth | Error,
+    initialState: Auth | null = null,
+): AuthAdapter {
+    let data: Auth | null = initialState;
+    return {
+        async authenticate() {
+            data = result instanceof Error ? null : result;
+            return result;
+        },
+        getAuth() {
+            return data;
+        },
+        logout() {
+            data = null;
+        },
+    };
+}

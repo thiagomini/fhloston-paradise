@@ -1,5 +1,4 @@
-import { type Auth, setAuth } from './AuthService';
-import { useAuthAdapter } from './AuthProvider';
+import { Auth, useAuthAdapter } from './AuthProvider';
 
 interface LoginResult {
     data: Auth | null;
@@ -16,9 +15,16 @@ export function useLogin() {
             return { data: null, error: result.message };
         }
 
-        setAuth(result.token, result.user);
         return { data: result, error: null };
     }
 
-    return { login };
+    function getAuth() {
+        return adapter.getAuth();
+    }
+
+    function logout() {
+        adapter.logout();
+    }
+
+    return { login, getAuth, logout };
 }

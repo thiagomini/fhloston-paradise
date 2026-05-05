@@ -8,13 +8,12 @@ import {
     TextInput,
     Title,
 } from '../../design-system';
-import { getAuth } from './AuthService';
 import { validateLoginForm } from './LoginPageService';
 import { useLogin } from './useLogin';
 
 export function LoginPage() {
     const navigate = useNavigate();
-    const { login } = useLogin();
+    const { login, getAuth } = useLogin();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
